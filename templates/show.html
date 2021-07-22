@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Home</title>
+        <link rel="icon" href="{{ url_for('static', filename='styles/image/unnamed.png')}}"/>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/show.css')}}"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    </head>
+    <body>
+        <input type="checkbox" id="check">
+        <header>
+            <label for="check">
+                <i class="fas fa-bars" id="sidebar_btn"></i>
+            </label>
+            <div  class="left_area">
+                <h3>Guong <span>Tuong Tac</span></h3>
+            </div>
+            <!-- <div class="right_area">
+                <a href="#" class="button">home</a>
+            </div> -->
+        </header>
+         <div class="sidebar">
+            <center>
+                <img src="static/styles/image/unnamed.png" alt="">
+                <h4>Hi</h4>
+            </center>
+            <a href="{{ url_for('home') }}" id="information"><i class="fas fa-users"></i><span>Information</span></a>
+            <a href="{{ url_for('show') }}" id="show"><i class="fas fa-desktop"></i><span>Show</span></a>
+            <a href="{{ url_for('interaction') }}" id="choise"><i class="fas fa-tshirt"></i><span>Choose clothes</span></a>
+         </div>
+         <div class="content">
+             <center>
+                <h1>Show skeleton and points cloud</h1>
+                <img src="static/styles/image/show1.jpg" alt="">
+                <img src="static/styles/image/show2.jpg" alt="">
+             </center>
+            
+         </div>
+    </body>
+</html>

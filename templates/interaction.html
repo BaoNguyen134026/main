@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Home</title>
+        <link rel="icon" href="{{ url_for('static', filename='styles/image/unnamed.png')}}"/>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/interaction.css')}}"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    </head>
+    <body>
+        <input type="checkbox" id="check">
+        <header>
+            <label for="check">
+                <i class="fas fa-bars" id="sidebar_btn"></i>
+            </label>
+            <div  class="left_area">
+                <h3>Guong <span>Tuong Tac</span></h3>
+            </div>
+            <!-- <div class="right_area">
+                <a href="#" class="button">home</a>
+            </div> -->
+        </header>
+         <div class="sidebar">
+            <center>
+                <img src="static/styles/image/unnamed.png" alt="">
+                <h4>Hi</h4>
+            </center>
+            <a href="{{ url_for('home') }}" id="information"><i class="fas fa-users"></i><span>Information</span></a>
+            <a href="{{ url_for('show') }}" id="show"><i class="fas fa-desktop"></i><span>Show</span></a>
+            <a href="{{ url_for('interaction') }}" id="choise"><i class="fas fa-tshirt"></i><span>Choose clothes</span></a>
+         </div>
+         <div class="content">
+            <div class="body">
+                <h3 id="h3">Choissse</h3>
+                <img id="show_image" class="skeleton" src="static/styles/image/3.jpg" alt="">
+            </div>
+            <div class="row">
+                <div class="column">
+                  <img id = "img" src="static/styles/image/1.jpg" alt="Nature" style="width:100%" onclick="myFunction(this);">
+                </div>
+                <div class="column">
+                  <img id = "img" src="static/styles/image/2.jpg" alt="Snow" style="width:100%" onclick="myFunction(this);">
+                </div>
+                <div class="column">
+                  <img id = "img" src="static/styles/image/3.jpg" alt="Mountains" style="width:100%" onclick="myFunction(this);">
+                </div>
+                <div class="column">
+                  <img id = "img" src="static/styles/image/4.jpg" alt="Lights" style="width:100%" onclick="myFunction(this);">
+                </div>
+                <div class="column">
+                  <img id = "img" src="static/styles/image/5.jpg" alt="Lights" style="width:100%" onclick="myFunction(this);">
+                </div>
+                <div class="column">
+                  <img id = "img" src="static/styles/image/6.jpg" alt="Lights" style="width:100%" onclick="myFunction(this);">
+                </div>
+                <div class="column">
+                  <img id = "img" src="static/styles/image/7.jpg" alt="Lights" style="width:100%" onclick="myFunction(this);">
+                </div>
+            </div>
+         </div>
+    </body>
+    <script>
+        function myFunction(imgs) {
+          var expandImg = document.getElementById("show_image");
+          expandImg.src = imgs.src;
+        }
+        var id_p = 0;
+        var idImage_r = 0;
+        const listImage = ["static/styles/image/black.png","static/styles/image/Image32.jpg","static/styles/image/Image4.jpg","static/styles/image/Image23.jpg"]
+        
+        setInterval(updatainteraction,10); // update
+
+        function updatainteraction(){
+            // gui http request xuong server
+            $.post("read.php",
+            function(data){
+                // doc gia tri tu server gui len
+                var id = data[0].id;
+                var k = data[0].kind;
+                
+                var text= id.toString()
+                document.getElementById("h3").innerHTML = text;
+                if(id != id_p){
+                  if ((k == 1)&(idImage_r>0)){
+                    idImage_r--; 
+                    document.getElementById("show_image").src = listImage[idImage_r];
+                    id_p = id;
+                  }
+                  else if ((k == 2)&(idImage_r<3)){
+                    idImage_r++; 
+                    document.getElementById("show_image").src = listImage[idImage_r];
+                    id_p = id;
+                  }
+                }
+            }) 
+        }   
+      </script>
+</html>
