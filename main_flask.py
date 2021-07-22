@@ -70,14 +70,13 @@ def show():
 @app.route('/loading')
 def loading():
     #write into database
-    mycursor = mydb.cursor()
-    sql = "INSERT INTO size (id, g,h,v1,v2,v3) VALUES (%s, %s,%s, %s,%s, %s)"
-    val = (None)
-    mycursor.execute(sql, val)
-    mydb.commit()
-
+    # mycursor = mydb.cursor()
+    # sql = "INSERT INTO size (id, g,h,v1,v2,v3) VALUES (%s, %s,%s, %s,%s, %s)"
+    # val = (None)
+    # mycursor.execute(sql, val)
+    # mydb.commit()
     return render_template('loading.html')
-    
+
 @app.route('/interaction')
 def interaction():
     """Video streaming home page."""

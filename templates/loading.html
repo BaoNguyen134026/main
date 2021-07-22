@@ -27,46 +27,35 @@
             </center>
             <a href="{{ url_for('home') }}" id="information"><i class="fas fa-users"></i><span>Information</span></a>
             <a href="{{ url_for('show') }}" id="show"><i class="fas fa-desktop"></i><span>Show</span></a>
-            <a href="{{ url_for('interaction') }}" id="choise"><i class="fas fa-tshirt"></i><span>Choose clothes</span></a>
+            <a href="{{ url_for('loading') }}" id="choise"><i class="fas fa-tshirt"></i><span>Choose clothes</span></a>
          </div>
          <div class="content">
-            
-         </div>
+           <center>
+          <h1>Finding size</h1>
+          <button onclick="myFunction()">Try it</button>
+           </center>
+          
+      </div>
     </body>
     <script>
-        function myFunction(imgs) {
-          var expandImg = document.getElementById("show_image");
-          expandImg.src = imgs.src;
-        }
-        var id_p = 0;
-        var idImage_r = 0;
-        const listImage = ["static/styles/image/black.png","static/styles/image/Image32.jpg","static/styles/image/Image4.jpg","static/styles/image/Image23.jpg"]
-        
-        setInterval(updatainteraction,10); // update
-
-        function updatainteraction(){
+        setInterval(updateloading,10); // update
+        function updateloading(){
             // gui http request xuong server
             $.post("read.php",
             function(data){
                 // doc gia tri tu server gui len
                 var id = data[0].id;
                 var k = data[0].kind;
-                
                 var text= id.toString()
-                document.getElementById("h3").innerHTML = text;
-                if(id != id_p){
-                  if ((k == 1)&(idImage_r>0)){
-                    idImage_r--; 
-                    document.getElementById("show_image").src = listImage[idImage_r];
-                    id_p = id;
-                  }
-                  else if ((k == 2)&(idImage_r<3)){
-                    idImage_r++; 
-                    document.getElementById("show_image").src = listImage[idImage_r];
-                    id_p = id;
-                  }
+
+                if (k == 1){
+                    continue;
+                }
+                else if(k==2){
+                    continue;
+                    window.location.href="{{ url_for('interaction') }}";
                 }
             }) 
-        }   
+        }
       </script>
 </html>

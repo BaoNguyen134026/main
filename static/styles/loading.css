@@ -128,41 +128,13 @@ label #sidebar_btn:hover{
     height: 110vh;
     transition: 0.5s;
 }
-
+.content h1{
+    color: rgb(255, 255, 255);
+    padding-top: 300px;
+}
 #check:checked ~ .content{
     margin-left: 60px;
 }
 #check{
     display: none;
-}
-div.body{
-    width: 60%;
-    margin: 0% 15%;
-    /* height: 500px; */
-
-}
-div.body > img{
-    width:100%;
-    margin-top: 30px;
-    border: 2px solid rgba(21, 35, 95, 0.678);
-    border-radius: 7px;
-}
-div.row{
-    display: flex;
-    margin: auto;
-    background-color: rgba(38, 68, 77, 0.171);
-}
-div.column{
-    padding: 30px;
-    width: 100px;
-}
-div.column>img{
-    border-radius: 2px;
-    opacity: 0.5;
-    transition: 0.5s;
-    /* width: 10px; */
-}
-div.column>img:hover{
-    transform: scale(1.5);
-    opacity: 1;
 }

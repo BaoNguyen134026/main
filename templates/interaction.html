@@ -68,9 +68,9 @@
         var idImage_r = 0;
         const listImage = ["static/styles/image/black.png","static/styles/image/Image32.jpg","static/styles/image/Image4.jpg","static/styles/image/Image23.jpg"]
         
-        setInterval(updatainteraction,10); // update
+        setInterval(updateinteraction,10); // update
 
-        function updatainteraction(){
+        function updateinteraction(){
             // gui http request xuong server
             $.post("read.php",
             function(data){
