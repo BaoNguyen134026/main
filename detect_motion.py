@@ -405,7 +405,11 @@ if __name__ == "__main__":
             depth_image_2 = np.asanyarray(depth_frame_2.get_data())
             color_image_2 = np.asanyarray(color_2.get_data())
             color_image_2 = cv2.cvtColor(color_image_2, cv2.COLOR_BGR2RGB)
+            # doc database
+            # sle = ?
+            
             if sle == 1:
+                '''find size'''
                 # perform inference and update the tracking id
                 skeletons = skeletrack.track_skeletons(color_image_1)
 
@@ -433,7 +437,10 @@ if __name__ == "__main__":
                 pcl2 = pcl1.voxel_down_sample(voxel_size=0.017)
                 # calculate size
                 h,vong = icp(pcl1, pcl2, P3d_Skeletons)
+                # ghi sle = 2
             elif sle == 2:
+                '''tuong tac'''
+                # ghi lien tuc doc tac vao database
                 pass
             cv2.imshow(window_name, color_image_1)
             cv2.imshow('2',color_image_2)
@@ -442,6 +449,7 @@ if __name__ == "__main__":
         pipeline_1.stop()
         pipeline_2.stop()
         cv2.destroyAllWindows()
+        #sle = 0
     except Exception as ex:
         print('Exception occured: "{}"'.format(ex))
 

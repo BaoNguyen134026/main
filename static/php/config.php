@@ -1,9 +1,9 @@
 <?php
 // Connect to database
 $server = "localhost";
-$user = "admin"; 
-$pass = "123456";
-$dbname = "chart_demo";
+$user = "byt"; 
+$pass = "1231";
+$dbname = "interaction";
 
 $conn = mysqli_connect($server,$user,$pass,$dbname);
 
@@ -11,6 +11,4 @@ $conn = mysqli_connect($server,$user,$pass,$dbname);
 if($conn === false){
     die("ERROR: Could not connect. " . mysqli_connect_error());
 }
-
-
 ?>
