@@ -2,7 +2,7 @@
 // Connect to database
 $server = "localhost";
 $user = "byt"; 
-$pass = "1231";
+$pass = "123";
 $dbname = "interaction";
 
 $conn = mysqli_connect($server,$user,$pass,$dbname);

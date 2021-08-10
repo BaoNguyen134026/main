@@ -130,13 +130,14 @@ label #sidebar_btn:hover{
 }
 .content h1{
     color: rgb(255, 255, 255);
-    padding-top: 200px;
+    padding-top: 100px;
 }
 .content center{
     width: 100%;
 }
 .content>center>img{
     width: 40%;
+    height: 950px;
     padding-left: 40px;
     transition: 0.5s;
 }

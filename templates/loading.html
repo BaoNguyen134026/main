@@ -31,31 +31,27 @@
          </div>
          <div class="content">
            <center>
-          <h1>Finding size</h1>
-          <button onclick="myFunction()">Try it</button>
+                <h1>Finding size</h1>
+                <button type="button" onclick="myFunc()">View Example Page</button>
            </center>
-          
-      </div>
+        </div>
     </body>
     <script>
-        setInterval(updateloading,10); // update
-        function updateloading(){
+        setInterval(loading_func,10); // update
+        function myFunc(){
+            window.location.href ="{{ url_for('interaction') }}"
+        }
+        function loading_func(){
             // gui http request xuong server
-            $.post("read.php",
+            $.post("static/php/readloading.php",
             function(data){
                 // doc gia tri tu server gui len
                 var id = data[0].id;
-                var k = data[0].kind;
-                var text= id.toString()
-
-                if (k == 1){
-                    continue;
+                var flag = data[0].flag;
+                if (flag == 2){
+                    window.location.href ="{{ url_for('interaction') }}"
                 }
-                else if(k==2){
-                    continue;
-                    window.location.href="{{ url_for('interaction') }}";
-                }
-            }) 
+            })
         }
       </script>
 </html>

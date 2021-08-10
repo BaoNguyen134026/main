@@ -3,6 +3,8 @@
     <head>
         <meta charset="utf-8">
         <title>Home</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.min.js"> </script>
         <link rel="icon" href="{{ url_for('static', filename='styles/image/unnamed.png')}}"/>
         <link rel="stylesheet" href="{{ url_for('static', filename='styles/interaction.css')}}"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -27,12 +29,12 @@
             </center>
             <a href="{{ url_for('home') }}" id="information"><i class="fas fa-users"></i><span>Information</span></a>
             <a href="{{ url_for('show') }}" id="show"><i class="fas fa-desktop"></i><span>Show</span></a>
-            <a href="{{ url_for('interaction') }}" id="choise"><i class="fas fa-tshirt"></i><span>Choose clothes</span></a>
+            <a href="{{ url_for('loading') }}" id="choise"><i class="fas fa-tshirt"></i><span>Choose clothes</span></a>
          </div>
          <div class="content">
             <div class="body">
                 <h3 id="h3">Choissse</h3>
-                <img id="show_image" class="skeleton" src="static/styles/image/3.jpg" alt="">
+                <img id="show_image" class="skeleton" src="static/styles/image/4.jpg" alt="">
             </div>
             <div class="row">
                 <div class="column">
@@ -72,7 +74,7 @@
 
         function updateinteraction(){
             // gui http request xuong server
-            $.post("read.php",
+            $.post("php/readdata.php",
             function(data){
                 // doc gia tri tu server gui len
                 var id = data[0].id;

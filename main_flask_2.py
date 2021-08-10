@@ -8,7 +8,13 @@ import util as cm
 import math
 import numpy as np
 from skeletontracker import skeletontracker
-
+import pickle
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.datasets import load_iris
+from sklearn import svm
+from sklearn import metrics
 app = Flask(__name__)
 
 mydb = mysql.connector.connect(
@@ -17,6 +23,54 @@ mydb = mysql.connector.connect(
   password="123",
   database="interaction"
 )
+def motion_kinds(point_detect):
+        point_detect = np.array(point_detect)
+        detect = np.arange(len(point_detect)).reshape((len(point_detect),1)).tolist()
+        for i in range(1,len(point_detect)):
+            P15_distance[i] = math.sqrt(math.pow(point_detect[i][0]-point_detect[i-1][0],2)
+                                    +math.pow(point_detect[i][1]-point_detect[i-1][1],2)
+                                    +math.pow(point_detect[i][2]-point_detect[i-1][2],2))
+        b = [i for i in P15_distance if i >0.01]
+        # print('len(b) =',len(b))
+        if len(b) > 11:
+            for i in range(0,15):
+                detect[int(i)] =  [point_detect[int(i)][0] - point_detect[0][0],
+                                    point_detect[int(i)][1] - point_detect[0][1],
+                                    point_detect[int(i)][2] - point_detect[0][2]]
+            detect=np.array(detect)
+            detect = np.reshape(detect,(1,45))
+            a = loaded_model.predict(detect)
+        else: a = None
+        return a 
+def motion_detection(point_3d):
+    global first_loop, cnt, Points_15, Points_3
+    if first_loop == True:
+        Points_15[cnt - 1] = [point_3d[0],
+                            point_3d[1],
+                            point_3d[2]]
+        cnt+=1
+        if cnt >= 15:
+            first_loop = False
+            cnt = 0
+            return motion_kinds(Points_15)
+    else:
+        if cnt <= 2:
+            Points_3[cnt] = [point_3d[0],
+                                point_3d[1],
+                                point_3d[2]]
+            cnt+=1
+             
+        else:
+            for ii in range(0,12):
+                Points_15[int(ii)] = [Points_15[int(ii)+3][0],
+                                                    Points_15[int(ii)+3][1],
+                                                    Points_15[int(ii)+3][2]]
+            for ii in range(12,15):
+                Points_15[int(ii)] = [Points_3[int(ii)-12][0],
+                                    Points_3[int(ii)-12][1],
+                                    Points_3[int(ii)-12][2]]
+            cnt = 0
+            return motion_kinds(Points_15)
 def render_ids_3d(
     render_image, skeletons_2d, depth_map, depth_intrinsic, joint_confidence):
     thickness = 1
@@ -51,7 +105,6 @@ def render_ids_3d(
             if skeleton_2D.confidences[joint_index] > joint_confidence:
                 
                 distance_in_kernel = []
-                # of image RGB
                 low_bound_x = max(
                     0,
                     int(
@@ -74,13 +127,10 @@ def render_ids_3d(
                     rows - 1,
                     int(joints_2D[joint_index].y + math.ceil(distance_kernel_size / 2)),
                 )
-                # have to change to Depth
                 for x in range(low_bound_x, upper_bound_x):
                     for y in range(low_bound_y, upper_bound_y):
                         distance_in_kernel.append(depth_map.get_distance(847-y, x))
-                if len(distance_in_kernel) == 25:
-                    median_distance = np.percentile(np.array(distance_in_kernel), 50)
-                else: continue                
+                median_distance = np.percentile(np.array(distance_in_kernel), 50)
                 depth_pixel = [
                     847-int(joints_2D[joint_index].y),
                     int(joints_2D[joint_index].x),
@@ -99,15 +149,14 @@ def render_ids_3d(
                     i = "{}".format(joint_index)
                     
                     cnt +=1
-                    save[cnt-1] = [point_3d[1],
-                                        -point_3d[0],
+                    save[cnt-1] = [point_3d[0],
+                                        point_3d[1],
                                         point_3d[2]]
+                    
                     cv2.putText(
                         render_image,
                     
-                        str(i) + ' ' + str([point_3d[1],
-                                        point_3d[0],
-                                        -point_3d[2]]) ,
+                        str(i) + ' ' + str(point_3d) ,
                         (int(joints_2D[joint_index].x), int(joints_2D[joint_index].y)),
                         cv2.FONT_HERSHEY_DUPLEX,
                         0.4,
@@ -121,7 +170,6 @@ def render_ids_3d(
 def gen_frames(camera_id):
     if int(camera_id) == 0:
         config_1 = rs.config()
-        config_1.enable_device('046122251324')
         config_1.enable_stream(rs.stream.depth, 848, 480, rs.format.z16, 30)
         config_1.enable_stream(rs.stream.color, 848, 480, rs.format.rgb8, 30)
         colorizer = rs.colorizer()
@@ -143,6 +191,12 @@ def gen_frames(camera_id):
         skeletrack = skeletontracker(cloud_tracking_api_key="")
         joint_confidence = 0.2
         # Create window for initialisation
+        cnt = 0
+        first_loop = True
+        loaded_model = pickle.load(open('byt.sav', 'rb'))
+        P15_distance = np.arange(15).reshape((15,)).tolist()
+        Points_15 = np.arange(15).reshape((15,1)).tolist()
+        Points_3 = np.arange(3).reshape((3,1)).tolist()
         while True:
             # Create a pipeline object. This object configures the streaming camera and owns it's handle
             unaligned_frames_1 = pipeline_1.wait_for_frames()
@@ -154,7 +208,6 @@ def gen_frames(camera_id):
             color_image_1 = np.asanyarray(color_1.get_data())
             color_image_1 = cv2.cvtColor(color_image_1, cv2.COLOR_BGR2RGB)
             color_image_1 = cv2.rotate(color_image_1, cv2.ROTATE_90_COUNTERCLOCKWISE)
-
             skeletons = skeletrack.track_skeletons(color_image_1)
             # print(skeletons)
             # render the skeletons on top of the acquired image and display it
@@ -163,57 +216,17 @@ def gen_frames(camera_id):
             skeletons_3D = render_ids_3d(
                 color_image_1, skeletons, depth_1, depth_intrinsic_1, joint_confidence
             )
+            print(skeletons_3D)
+            if skeletons_3D is not None:
+                print(motion_detection(skeletons_3D[4]))
+            # render image for html
             dsize = (320, 240)
             color_image_1 = cv2.resize(color_image_1, dsize)
             ret, buffer = cv2.imencode('.jpg', color_image_1)
             color_image_1 = buffer.tobytes()
             yield (b'--frame\r\n'
                 b'Content-Type: image/jpeg\r\n\r\n' + color_image_1 + b'\r\n')  # concat frame one by one and show result
-    elif int(camera_id) == 1:
-        config_2 = rs.config()
-        config_2.enable_device('108222250284')
-        config_2.enable_stream(rs.stream.depth, 848, 480, rs.format.z16, 30)
-        config_2.enable_stream(rs.stream.color, 848, 480, rs.format.rgb8, 30)
-        colorizer = rs.colorizer()
-        # Start the realsense pipeline
-        pipeline_2 = rs.pipeline()
-        pipeline_2.start(config_2)
-        # Create align object to align depth frames to color frames
-        align_2 = rs.align(rs.stream.color)
-        for i in range(30):
-            pipeline_2.wait_for_frames()
-        # Get the intrinsics information for calculation of 3D point
-        unaligned_frames_2 = pipeline_2.wait_for_frames()
-        frames_2 = align_2.process(unaligned_frames_2)
-        depth_2 = frames_2.get_depth_frame()
-        depth_intrinsic_2 = depth_2.profile.as_video_stream_profile().intrinsics
-        color_2 = frames_2.get_color_frame()
-        color_image_2 = np.asanyarray(color_2.get_data())
-        # Initialize the cubemos api with a valid license key in default_license_dir()
-        skeletrack = skeletontracker(cloud_tracking_api_key="")
-        joint_confidence = 0.2
-        # Create window for initialisation
-        print('hi')
-        while True:
-            # Create a pipeline object. This object configures the streaming camera and owns it's handle
-            unaligned_frames_2 = pipeline_2.wait_for_frames()
-            frames_2 = align_2.process(unaligned_frames_2)
-            depth_2 = frames_2.get_depth_frame()
-            color_2 = frames_2.get_color_frame()
-            if not depth_2 or not color_2:
-                continue
-            # Convert images to numpy arrays
-            depth_image = np.asanyarray(depth_2.get_data())
-            depth_image = cv2.rotate(depth_image, cv2.ROTATE_90_COUNTERCLOCKWISE)
-
-            print(depth_image)
-            dsize = (320, 240)
-            # resize image
-            depth_image = cv2.resize(depth_image, dsize)
-            ret, b = cv2.imencode('.jpg', depth_image)
-            depth_image = b.tobytes()
-            yield (b'--frame\r\n'
-                b'Content-Type: image/jpeg\r\n\r\n' + depth_image + b'\r\n')  # concat frame one by one and show result
+  # concat frame one by one and show result
 #run show page
 @app.route('/video_feed/<string:id>/', methods=["GET"])
 def video_feed(id):
@@ -225,11 +238,11 @@ def video_feed(id):
 @app.route('/') #tao API
 def home(): 
     """Video streaming home page."""
-    # mycursor = mydb.cursor()
-    # sql = "INSERT INTO loading (id,flag) VALUES (%s, %s)"
-    # val = (None,0)
-    # mycursor.execute(sql, val)
-    # mydb.commit()
+    mycursor = mydb.cursor()
+    sql = "INSERT INTO loading (id,flag) VALUES (%s, %s)"
+    val = (None,0)
+    mycursor.execute(sql, val)
+    mydb.commit()
     
     return render_template('home.html')
 @app.route('/show')
